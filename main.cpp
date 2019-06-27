@@ -1,75 +1,79 @@
 #include <iostream>
-#include <string>
 #include <fstream>
+#include <iomanip>
 using namespace std;
 
-ofstream wout("/Users/WT20181105881/Desktop/tout.txt");
 ifstream win("/Users/WT20181105881/Desktop/tin.txt");
 ifstream jin("/Users/WT20181105881/Desktop/fin.txt");
+ofstream wout("/Users/WT20181105881/Desktop/tout.txt");
 
-class compet{
-    private:
-        string name,school,num;
-    public:
-        compet(string s,string nu,string na):school(s),num(nu),name(na){}
-        ~compet();
-        void display();
+class Person{
+    string school,num,name;
+    double score[7]={0};
+public:
+    double sum=0,max=0,min=0,average=0;
+    Person(string s,string nu,string na);
+    ~Person();
+    void display(int i);
 };
 
-void compet::display(){
-    wout<<school<<" "<<num<<" "<<name<<endl;
+void show(string judge[]){
+    wout<<left<<setw(8)<<"Rank";
+    wout<<left<<setw(9)<<"Name"<<left<<setw(15)<<"School"<<left<<setw(15)<<"Num";
+    for(int i=0;i<7;i++)
+        wout<<left<<setw(10)<<judge[i];
+    wout<<left<<setw(8)<<"Average"<<endl;
 }
 
-int main() {
-    compet *per[3];
-    
-    if(win.is_open()){          //学院，编号，姓名
-        string name[3],school[3],num[3];
-        for(int i=0;i<3;i++){
-            win>>school[i]>>num[i]>>name[i];
-            per[i]=new compet(school[i],num[i],name[i]);
+void Person::display(int i){
+    wout<<left<<setw(8)<<i+1;
+    wout<<left<<setw(9)<<name<<left<<setw(15)<<school<<left<<setw(15)<<num;
+    for(int i=0;i<7;i++){
+        wout<<left<<setw(10)<<score[i];
+    }
+    wout<<left<<setw(8)<<average<<endl;
+}
+
+Person::Person(string s,string nu,string na):school(s),num(nu),name(na){
+    for(int i=0;i<7;i++){
+        jin>>score[i];
+        sum+=score[i];
+        if(i==0){
+            max=score[i];
+            min=score[i];
+        }
+        else{
+            if(score[i]>max) max=score[i];
+            if(score[i]<min) min=score[i];
         }
     }
+    sum-=(max+min);
+    average=sum/5.0;
+}
+
+int main(){
+    int n;
+    string school,num,name,judge[7];
+    win>>n;
+    Person *per[n];
+    void getJudge();
+    for(int i=0;i<7;i++)
+        jin>>judge[i];
+    for(int i=0;i<n;i++){
+        win>>school>>num>>name;
+        per[i] = new Person(school,num,name);
+    }
     
-    string judgename[3];
-    float score[7][3];
-    float max=0,min=0,sum[3],average[3];
-    
-    if(jin.is_open()){          //裁判和打分
-        for(int i=0;i<7;i++){
-            jin>>judgename[i];
-            for(int j=0;j<3;j++){
-                jin>>score[i][j];
+    for(int i=0;i<n-1;i++){
+        for(int j=0;j<n-1;j++){
+            if(per[j]->average<per[j+1]->average){
+                Person *tper=per[j+1];
+                per[j+1]=per[j];
+                per[j]=tper;
             }
         }
-        
-        for(int i=0;i<3;i++){
-            sum[i]=0;
-            for(int j=0;j<7;j++){
-                if(j==0){
-                    max=score[j][i];
-                    min=score[j][i];
-                }
-                else{
-                    if(score[j][i]>max) max=score[j][i];
-                    if(score[j][i]<min) min=score[j][i];
-                }
-                sum[i]+=score[j][i];
-            }
-            sum[i]-=(max+min);
-            average[i]=sum[i]/5.0;
-        }
     }
-    
-    for(int i=0;i<3;i++){
-        per[i]->display();
-        for(int j=0;j<7;j++){
-            wout<<judgename[j]<<" : "<<score[j][i];
-            if(j!=6)    wout<<" ";
-        }
-        wout<<" average = "<<average[i]<<endl;
-        wout<<endl;
-    }
-    
-    return 0;
+    show(judge);
+    for(int i=0;i<n;i++)
+        per[i]->display(i);
 }
