@@ -8,6 +8,7 @@ ifstream jin("/Users/WT20181105881/Desktop/fin.txt");
 ofstream wout("/Users/WT20181105881/Desktop/tout.txt");
 
 class Person{
+private:
     string school,num,name;
     double score[7]={0};
 public:
@@ -19,7 +20,7 @@ public:
 
 void show(string judge[]){
     wout<<left<<setw(8)<<"Rank";
-    wout<<left<<setw(9)<<"Name"<<left<<setw(15)<<"School"<<left<<setw(15)<<"Num";
+    wout<<left<<setw(15)<<"Name"<<left<<setw(15)<<"School"<<left<<setw(15)<<"Num";
     for(int i=0;i<7;i++)
         wout<<left<<setw(10)<<judge[i];
     wout<<left<<setw(8)<<"Average"<<endl;
@@ -27,7 +28,7 @@ void show(string judge[]){
 
 void Person::display(int i){
     wout<<left<<setw(8)<<i+1;
-    wout<<left<<setw(9)<<name<<left<<setw(15)<<school<<left<<setw(15)<<num;
+    wout<<left<<setw(15)<<name<<left<<setw(15)<<school<<left<<setw(15)<<num;
     for(int i=0;i<7;i++){
         wout<<left<<setw(10)<<score[i];
     }
@@ -56,9 +57,10 @@ int main(){
     string school,num,name,judge[7];
     win>>n;
     Person *per[n];
-    void getJudge();
+    
     for(int i=0;i<7;i++)
         jin>>judge[i];
+    
     for(int i=0;i<n;i++){
         win>>school>>num>>name;
         per[i] = new Person(school,num,name);
@@ -73,7 +75,9 @@ int main(){
             }
         }
     }
+    
     show(judge);
+    
     for(int i=0;i<n;i++)
         per[i]->display(i);
 }
